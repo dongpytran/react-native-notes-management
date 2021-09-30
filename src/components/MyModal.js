@@ -9,8 +9,8 @@ import {
     View,
   } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-import { addNote, updateNode } from "../api/NodeApi";
-import { getAll } from "../api/NodeApi";
+import { addNote, updateNote } from "../api/NoteApi";
+import { getAll } from "../api/NoteApi";
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 export default function MyModal({ isVisible, onClick, isAddNew, setdata, data, afterEdit, handleSearch}) {
@@ -23,7 +23,7 @@ export default function MyModal({ isVisible, onClick, isAddNew, setdata, data, a
     const handleSave = () => {
       if(isAddNew == false){
         console.log(data.id, note);
-        updateNode(data.id, note).then(clearInput()).then(afterEdit()).then(()=>handleSearch)
+        updateNote(data.id, note).then(clearInput()).then(afterEdit()).then(()=>handleSearch)
         .catch(error =>{
           console.log(error);
         });

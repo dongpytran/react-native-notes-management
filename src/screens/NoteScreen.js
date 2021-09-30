@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, StyleSheet, Button, Modal, Pressable, Alert, Picker} from 'react-native'
 import { StatusBar } from "expo-status-bar";
 import { useState, useEffect, useLayoutEffect } from 'react';
-import { deleteNote, getAll, searchNote } from '../api/NodeApi';
+import { deleteNote, getAll, searchNote } from '../api/NoteApi';
 import Note from '../components/Note';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, TextInput, TouchableHighlight } from 'react-native-gesture-handler';
@@ -10,7 +10,7 @@ import MyModal from '../components/MyModal';
 import { Ionicons } from '@expo/vector-icons';
 
 const NoteScreen = ({ navigation }) => {
-    const [showModal, setShowModal] = React.useState(false);
+    const [showModal, setShowModal] = useState(false);
     const [notes, setnotes] = useState([]);    
     const [isAddnew, setisAddnew] = useState(false);
     const [lenght, setlenght] = useState(false);
@@ -40,20 +40,19 @@ const NoteScreen = ({ navigation }) => {
       );
     };
     useEffect(() => {
-        getAll().then(data=> setnotes(data));
-        setlenght(false);
-    },[lenght]);
-    useEffect(() => {
       if(!isSearch){
         const unsubscribe = navigation.addListener('focus', () => {
-          getAll().then(data=> setnotes(data)).then(console.log('wtf'));
+          getAll().then(res=> setnotes(res)).catch(error=> console.log(error));
         });
         return unsubscribe;
       }else{
         handleSearch();
         console.log('search')
       }
-    }, [navigation, keyword, isSearch]);
+      return function cleanup(){
+        console.log('clean up');
+      }
+    }, [navigation, isSearch]);
     const deleteItem = (id) => {
         deleteNote(id).then(Alert.alert('Delete Succeed!')).then(setlenght(true))
         .catch(error=>{
@@ -62,7 +61,7 @@ const NoteScreen = ({ navigation }) => {
       };
     const handleSearch = () =>{
       if(keyword == ''){
-        getAll().then(res=>setnotes(res));
+        getAll().then(res=>setnotes(res)).catch(error => console.log(error));
       }else{
         if(isSearch){
           searchNote(keyword, searchType).then(res=>setnotes(res))
